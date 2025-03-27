@@ -1,44 +1,39 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-const createBoards = async (request, response) => {
-	try {
-		const { name, tipo } = request.body;
-        if (!name || !tipo) {
-            return response.status(400).json({ msg: 'Nome e tipo são obrigatórios' });
-        }
-        const boardExist = await prisma.Board.findFirst({
-            where: {
-                OR: [
-                    { name: name }
-                ]
-            }
-        });
-        if (boardExist) {
-            return response.status(422).json({ msg: 'O nome do board já existe' });
-        }
-		const newBoard = await prisma.Board.create({
-            data: {
-                name,
-                tipo
-            }
-        });
-		console.log(newBoard);
-		return response.status(201).json(newBoard);
-	} catch (error) {
-		response.status(500).json({ error: 'Erro ao criar usuários' });
-	}
-};
-
-const getBoards = async (request, response) => {
+export const createBoards = async (req, res) => {
     try {
-        const boards = await prisma.Board.findMany();
-        return response.status(200).json(boards);
+      const { userId, name, tipo } = req.body;
+      const newBoard = await prisma.board.create({
+        data: {
+          name,
+          tipo,
+          users: {
+            connect: { id: userId },
+          },
+        },
+      });
+  
+      return res.status(201).json(newBoard);
     } catch (error) {
-        console.error(error);
-        return response.status(500).json({ error: 'Erro ao listar os boards' });
+      console.error("Erro ao criar board:", error);
+      return res.status(500).json({ message: "Erro interno do servidor" });
     }
-};
+  };
+
+  export const getBoards = async (req, res) => {
+    try {
+      const { userId } = req.query; 
+      const boards = await prisma.board.findMany({
+        where: userId ? { users: { some: { id: userId } } } : {}, 
+      });
+  
+      return res.status(200).json(boards);
+    } catch (error) {
+      console.error("Erro ao buscar boards:", error);
+      return res.status(500).json({ error: "Erro ao listar os boards" });
+    }
+  };
 
 const updateBoard = async (request, response) => {
     try {

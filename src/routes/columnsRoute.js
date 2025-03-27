@@ -5,6 +5,6 @@ import controllerColumns from '../models/columns.js';
 router.post('/createColumns', controllerColumns.createColumns);
 router.get('/boards/:boardId/lists', controllerColumns.getColumns);
 router.put('/editColumns/:id', controllerColumns.updateColumns);
-router.post('/deleteColumns/:id', controllerColumns.deleteColumns);
+router.delete('/deleteColumns/:id', controllerColumns.deleteColumns);
 
 export default router;

@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import userBoards from './src/routes/boardsRoute.js'; 
 import userCards from './src/routes/cardsRoute.js'; 
 import userColumns from './src/routes/columnsRoute.js'; 
+import user from './src/routes/userRoute.js';
 
 const app = express();
 const prisma = new PrismaClient();
@@ -16,6 +17,7 @@ app.use(bodyParser.json());
 app.use('/api', userBoards);
 app.use('/api', userCards);
 app.use('/api', userColumns);
+app.use('/api', user);
 
 // Board (Quadro) → Armazena informações do Kanban principal.
 // List (Lista) → Colunas dentro de um quadro.

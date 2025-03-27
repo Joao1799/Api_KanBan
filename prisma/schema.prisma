@@ -13,16 +13,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  senha    String 
+  name     String 
+  email    String   @unique
+  boards   UserBoard[]
+}
+
 model Board {
   id    String   @id @default(auto()) @map("_id") @db.ObjectId
   name  String
   tipo  String
   lists List[]   // Um board tem várias listas
+  users UserBoard[]
+}
+
+model UserBoard {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String
+  boardId String
+  user    User   @relation(fields: [userId], references: [id])
+  board   Board  @relation(fields: [boardId], references: [id])
 }
 
 model List {
   id      String   @id @default(auto()) @map("_id") @db.ObjectId
   name    String
+  order   String
   boardId String   // Chave estrangeira para o Board
   board   Board    @relation(fields: [boardId], references: [id])  // Correção do relacionamento
   cards   Card[]   // lista tem vários cards
@@ -31,6 +49,7 @@ model List {
 model Card {
   id     String   @id @default(auto()) @map("_id") @db.ObjectId
   title  String
+  order  String
   description String?
   type   String
   listId String   // Rel com a lista
